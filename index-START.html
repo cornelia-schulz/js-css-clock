@@ -56,12 +56,13 @@
       transform: translateY(-3px); /* account for the height of the clock hands */
     }
 
-    hand {
+    .hand {
       width:50%;
       height:6px;
-      background:black;
+      background:red;
       position: absolute;
       top:50%;
+      transform: rotateZ(275deg);
     }
 
     .hour-hand {
@@ -83,7 +84,7 @@
       position: absolute;
       transform-origin: 100% 50%;
       top: 50%;
-      animation: rotate 3600s infinite linear;
+      animation: rotate 3600s infinite steps(60);
     }
 
     .second-hand {
@@ -94,7 +95,8 @@
       position: absolute;
       top: 50%;
       transform-origin: 80% 50%;
-      animation: rotate 60s infinite linear;
+      /* animation works in conjunction with keyframes, it does a rotation every 60 seconds in steps */
+      animation: rotate 60s infinite steps(60);
     }
 
   @keyframes rotate {
@@ -110,7 +112,36 @@
     var hours = now.getHours();
     var minutes = now.getMinutes();
     var seconds = now.getSeconds();
+    console.log(hours + ":" + minutes + ":" + seconds);
 
+    // one object per hand with its angle in degrees
+    var hands = [
+      {
+        hand: "hour-hand",
+        angle: (hours * 30) + (minutes / 2)
+      },
+      {
+        hand: "min-hand",
+        angle: (minutes * 6)
+      },
+      {
+        hand: "second-hand",
+        angle: (seconds * 6)
+      }
+    ]
+
+    // loop through each of the hands to set the angle
+    for (var i = 0; i < hands.length; i++){
+      var elements = document.querySelectorAll("." + hands[i].hand);
+      console.log(hands[i].angle);
+      for(var j = 0; j < elements.length; j++){
+        elements[j].style.webkitTransform = 'rotateZ(' + hands[i].angle + 'deg)';
+        elements[j].style.transform = 'rotateZ(' + hands[i].angle + 'deg)';
+        if (hands[i].hand === "min-hand"){
+          elements[j].parentNode.setAttribute('data-second-angle', hands[j + 1].angle);
+        }
+      }
+    }
   </script>
 </body>
 </html>
