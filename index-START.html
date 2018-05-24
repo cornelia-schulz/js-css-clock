@@ -56,13 +56,52 @@
       transform: translateY(-3px); /* account for the height of the clock hands */
     }
 
-    .hand {
+    hand {
       width:50%;
       height:6px;
       background:black;
       position: absolute;
       top:50%;
     }
+
+    .hour-hand {
+      width: 30%;
+      left: 20%;
+      height: 6px;
+      background: black;
+      position: absolute;
+      transform-origin: 100% 50%;
+      top: 50%;
+      animation: rotate 43200s infinite linear;
+    }
+
+    .min-hand {
+      width: 50%;
+      left: 0;
+      height: 5px;
+      background: black;
+      position: absolute;
+      transform-origin: 100% 50%;
+      top: 50%;
+      animation: rotate 3600s infinite linear;
+    }
+
+    .second-hand {
+      width: 60%;
+      left: 0;
+      height: 3px;
+      background: black;
+      position: absolute;
+      top: 50%;
+      transform-origin: 80% 50%;
+      animation: rotate 60s infinite linear;
+    }
+
+  @keyframes rotate {
+    100% {
+      transform: rotateZ(360deg);
+    }
+  }
 
   </style>
 
