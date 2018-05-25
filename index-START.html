@@ -56,22 +56,13 @@
       transform: translateY(-3px); /* account for the height of the clock hands */
     }
 
-    .hand {
-      width:50%;
-      height:6px;
-      background:red;
-      position: absolute;
-      top:50%;
-      transform: rotateZ(275deg);
-    }
-
     .hour-hand {
       width: 30%;
       left: 20%;
       height: 6px;
       background: black;
       position: absolute;
-      transform-origin: 100% 50%;
+      transform-origin: 100%;
       top: 50%;
       animation: rotate 43200s infinite linear;
     }
@@ -82,26 +73,27 @@
       height: 5px;
       background: black;
       position: absolute;
-      transform-origin: 100% 50%;
+      transform-origin: 100%;
       top: 50%;
       animation: rotate 3600s infinite steps(60);
     }
 
     .second-hand {
-      width: 60%;
+      width: 50%;
       left: 0;
       height: 3px;
       background: black;
       position: absolute;
       top: 50%;
-      transform-origin: 80% 50%;
+      transform-origin: 100%;
       /* animation works in conjunction with keyframes, it does a rotation every 60 seconds in steps */
       animation: rotate 60s infinite steps(60);
+      z-index: 8;
     }
 
   @keyframes rotate {
     100% {
-      transform: rotateZ(360deg);
+      transform: rotateZ(90deg);
     }
   }
 
@@ -118,22 +110,22 @@
     var hands = [
       {
         hand: "hour-hand",
-        angle: (hours * 30) + (minutes / 2)
+        angle: ((hours / 12) * 360) + ((minutes/60)*30) + 90
       },
       {
         hand: "min-hand",
-        angle: (minutes * 6)
+        angle: ((minutes / 60) * 360) + ((seconds/60)*6) + 90
       },
       {
         hand: "second-hand",
-        angle: (seconds * 6)
+        angle: ((seconds / 60) * 360) + 90
       }
     ]
 
     // loop through each of the hands to set the angle
     for (var i = 0; i < hands.length; i++){
       var elements = document.querySelectorAll("." + hands[i].hand);
-      console.log(hands[i].angle);
+      console.log(hands[i].hand + ": " + hands[i].angle);
       for(var j = 0; j < elements.length; j++){
         elements[j].style.webkitTransform = 'rotateZ(' + hands[i].angle + 'deg)';
         elements[j].style.transform = 'rotateZ(' + hands[i].angle + 'deg)';
@@ -141,6 +133,41 @@
           elements[j].parentNode.setAttribute('data-second-angle', hands[j + 1].angle);
         }
       }
+    }
+
+    // Set a timeout for the initial minute hand movement and then every 60 seconds afterwards
+    function setupMinuteHand() {
+      var minuteHand = document.querySelectorAll(".min-hand");
+      var secondAngle = minuteHand[0].getAttribute("data-second-angle");
+      if (secondAngle > 0){
+        // Set a timeout until the end of the minute to move the minute hand
+        var delay = (((360 - secondAngle) / 6) + 0.1) * 1000;
+        setTimeout(function() {
+          moveMinuteHand(minuteHand);
+        }, delay);
+      }
+    }
+    
+    // first minute rotation of minute hand
+    function moveMinuteHand(minuteHand) {
+      for (var i = 0; i < minuteHand.length; i++) {
+        minuteHand[i].style.webkitTransform = "rotateZ(6deg)";
+        minuteHand[i].style.transform = "rotateZ(6deg)";
+      }
+
+    // continue with 60 seconds interval
+    setInterval(function() {
+      for (var i = 0; i < minuteHand.length; i++){
+        if (minuteHand[i].angle === undefined) {
+          minuteHand[i].angle = 12;
+        }
+        else {
+          minuteHand[i].angle += 6;
+        }
+        minuteHand[i].style.webkitTransform = "rotateZ(" + minuteHand[i].angle + "deg)";
+        minuteHand[i].style.transform = "rotateZ(" + minuteHand[i].angle + "deg)";
+      }
+    }, 60000);
     }
   </script>
 </body>
